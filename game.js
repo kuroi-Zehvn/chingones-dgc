@@ -1249,17 +1249,27 @@ function drawDisc() {
   ctx.beginPath();
   ctx.arc(0, 0, discRadius * 0.82, 0, Math.PI * 2);
   ctx.stroke();
+
+  // Draw a visible metallic gold/yellow cross stamp so rotation is extremely obvious!
+  ctx.strokeStyle = "#ffd166";
+  ctx.lineWidth = 1.8;
+  ctx.beginPath();
+  ctx.moveTo(-discRadius * 0.75, 0);
+  ctx.lineTo(discRadius * 0.75, 0);
+  ctx.moveTo(0, -discRadius * 0.75);
+  ctx.lineTo(0, discRadius * 0.75);
+  ctx.stroke();
   
   // Center stamp with loaded Chingones logo
   if (logoImg.complete) {
     ctx.save();
     // Clip to the inner stamp diameter
     ctx.beginPath();
-    ctx.arc(0, 0, discRadius * 0.72, 0, Math.PI * 2);
+    ctx.arc(0, 0, discRadius * 0.62, 0, Math.PI * 2);
     ctx.clip();
     
     // Draw the Chingones logo
-    const imgSize = discRadius * 1.44;
+    const imgSize = discRadius * 1.25;
     ctx.drawImage(logoImg, -imgSize / 2, -imgSize / 2, imgSize, imgSize);
     ctx.restore();
   } else {
@@ -1273,13 +1283,6 @@ function drawDisc() {
     ctx.arc(0, 0, discRadius * 0.35, 0, Math.PI * 2);
     ctx.fill();
   }
-  
-  // Outer stamp ring
-  ctx.strokeStyle = "#facc15";
-  ctx.lineWidth = 0.8;
-  ctx.beginPath();
-  ctx.arc(0, 0, discRadius * 0.55, 0, Math.PI * 2);
-  ctx.stroke();
 
   ctx.restore();
 }
