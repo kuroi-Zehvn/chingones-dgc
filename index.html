@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chingones Disc Golf</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <header class="brand" aria-label="Chingones Disc Golf Club">
+        <img src="assets/chingones.png" alt="Chingones Disc Golf Club" />
+        <p>15 quick holes &middot; aim, release, and hit the basket</p>
+      </header>
+
+      <section id="startPanel" class="score-panel" aria-label="Start game">
+        <div class="score-card">
+          <h2>Ready To Throw?</h2>
+          <p>Enter your name before the round. Lowest total throws wins.</p>
+          <form id="startForm">
+            <label for="startName">Player name</label>
+            <div class="score-entry">
+              <input id="startName" name="startName" maxlength="18" autocomplete="name" placeholder="Player name" required />
+              <button id="startButton" type="submit">Start</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="hud" aria-label="Scoreboard">
+        <div>
+          <span>Hole</span>
+          <strong id="levelLabel">1</strong>
+        </div>
+        <div>
+          <span>Throws</span>
+          <strong id="throwLabel">0</strong>
+        </div>
+        <div>
+          <span>Best</span>
+          <strong id="bestLabel">-</strong>
+        </div>
+        <div>
+          <span>Made</span>
+          <strong id="pointLabel">0</strong>
+        </div>
+        <button id="resetButton" type="button" title="Restart hole">&#8635;</button>
+      </section>
+
+      <canvas id="game" width="960" height="560" aria-label="Disc golf game"></canvas>
+
+      <section class="controls" aria-label="Controls">
+        <button id="prevLevel" type="button" title="Previous hole">&lsaquo;</button>
+        <p id="message">Drag from the player and release to throw.</p>
+        <button id="nextLevel" type="button" title="Next hole">&rsaquo;</button>
+      </section>
+
+      <section id="scorePanel" class="score-panel" aria-label="Final score" hidden>
+        <div class="score-card">
+          <h2>Round Complete</h2>
+          <p id="finalScore">You finished 15 holes.</p>
+          <div class="leaderboard">
+            <h3>Leaderboard</h3>
+            <ol id="leaderboardList">
+              <li>Connect Supabase to show global scores.</li>
+            </ol>
+          </div>
+          <button id="newRoundButton" type="button">New Round</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="game.js"></script>
+  </body>
+</html>
