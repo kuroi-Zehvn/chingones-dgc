@@ -14,6 +14,7 @@ const startName = document.getElementById("startName");
 const scorePanel = document.getElementById("scorePanel");
 const finalScore = document.getElementById("finalScore");
 const leaderboardList = document.getElementById("leaderboardList");
+const leaderboardNote = document.getElementById("leaderboardNote");
 const newRoundButton = document.getElementById("newRoundButton");
 
 const logoImg = new Image();
@@ -473,10 +474,14 @@ function playerRank(scores, playerScore) {
 
 function renderLeaderboard(scores, note = "", playerScore = null) {
   leaderboardList.innerHTML = "";
-  if (note) {
-    const item = document.createElement("li");
-    item.textContent = note;
-    leaderboardList.appendChild(item);
+  if (leaderboardNote) {
+    if (note) {
+      leaderboardNote.textContent = note;
+      leaderboardNote.hidden = false;
+    } else {
+      leaderboardNote.textContent = "";
+      leaderboardNote.hidden = true;
+    }
   }
   if (!scores.length) {
     const item = document.createElement("li");
