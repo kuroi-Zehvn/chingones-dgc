@@ -16,6 +16,9 @@ const finalScore = document.getElementById("finalScore");
 const leaderboardList = document.getElementById("leaderboardList");
 const newRoundButton = document.getElementById("newRoundButton");
 
+const logoImg = new Image();
+logoImg.src = "assets/chingones.png";
+
 const SUPABASE_URL = "https://jnkktaqthdcgpxwuslkz.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_8rEko1WBoIMWUyeIac2vaw_3Mti8ewT";
 const ROUND_SCORE_TABLE = "round_scores";
@@ -908,14 +911,18 @@ function drawPlayer(x, y) {
     ctx.quadraticCurveTo(10, 13, 12, 8);
     ctx.stroke();
     
-    // Draw disc in hand (ready)
-    ctx.fillStyle = "#ff2a6d";
-    ctx.beginPath();
-    ctx.arc(12, 8, 6, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = "#ffd166";
-    ctx.lineWidth = 1;
-    ctx.stroke();
+    // Only draw disc in hand if it's NOT at the tee (i.e. has been thrown or we are at start)
+    const showDiscInHand = !(state.throws === 0 && !state.disc.moving);
+    if (showDiscInHand) {
+      // Draw disc in hand (ready)
+      ctx.fillStyle = "#ff2a6d";
+      ctx.beginPath();
+      ctx.arc(12, 8, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#ffd166";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
   }
   
   // 5. Head (Slightly smaller to match thin torso)
@@ -1208,7 +1215,6 @@ function drawObstacle(obstacle) {
 
 function drawDisc() {
   const disc = state.disc;
-  if (state.throws === 0 && !disc.moving) return;
 
   ctx.save();
 
@@ -1219,8 +1225,11 @@ function drawDisc() {
   ctx.arc(disc.x + disc.z * 0.2, disc.y + 6 + disc.z * 0.3, shadowRadius, 0, Math.PI * 2);
   ctx.fill();
 
-  // 2. Draw actual flying disc (shifted up by Z, perfect circle)
+  // 2. Draw actual flying/spinning disc (shifted up by Z, perfect circle)
   ctx.translate(disc.x, disc.y - disc.z);
+  
+  // Rotate the disc constantly over time
+  ctx.rotate(performance.now() * 0.008);
   
   // Glow effect
   ctx.shadowColor = "#ff2a6d";
@@ -1241,15 +1250,29 @@ function drawDisc() {
   ctx.arc(0, 0, discRadius * 0.82, 0, Math.PI * 2);
   ctx.stroke();
   
-  // Shiny gold metallic stamp in the center (Chingones branding!)
-  const stampGrad = ctx.createLinearGradient(-3, -3, 3, 3);
-  stampGrad.addColorStop(0, "#fef08a");
-  stampGrad.addColorStop(0.5, "#facc15");
-  stampGrad.addColorStop(1, "#ca8a04");
-  ctx.fillStyle = stampGrad;
-  ctx.beginPath();
-  ctx.arc(0, 0, discRadius * 0.35, 0, Math.PI * 2);
-  ctx.fill();
+  // Center stamp with loaded Chingones logo
+  if (logoImg.complete) {
+    ctx.save();
+    // Clip to the inner stamp diameter
+    ctx.beginPath();
+    ctx.arc(0, 0, discRadius * 0.72, 0, Math.PI * 2);
+    ctx.clip();
+    
+    // Draw the Chingones logo
+    const imgSize = discRadius * 1.44;
+    ctx.drawImage(logoImg, -imgSize / 2, -imgSize / 2, imgSize, imgSize);
+    ctx.restore();
+  } else {
+    // Fallback shiny gold metallic stamp in the center if image not loaded yet
+    const stampGrad = ctx.createLinearGradient(-3, -3, 3, 3);
+    stampGrad.addColorStop(0, "#fef08a");
+    stampGrad.addColorStop(0.5, "#facc15");
+    stampGrad.addColorStop(1, "#ca8a04");
+    ctx.fillStyle = stampGrad;
+    ctx.beginPath();
+    ctx.arc(0, 0, discRadius * 0.35, 0, Math.PI * 2);
+    ctx.fill();
+  }
   
   // Outer stamp ring
   ctx.strokeStyle = "#facc15";
