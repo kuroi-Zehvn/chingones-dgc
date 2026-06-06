@@ -6,8 +6,6 @@ const bestLabel = document.getElementById("bestLabel");
 const pointLabel = document.getElementById("pointLabel");
 const message = document.getElementById("message");
 const resetButton = document.getElementById("resetButton");
-const prevLevel = document.getElementById("prevLevel");
-const nextLevel = document.getElementById("nextLevel");
 const startPanel = document.getElementById("startPanel");
 const startForm = document.getElementById("startForm");
 const startName = document.getElementById("startName");
@@ -1588,29 +1586,7 @@ resetButton.addEventListener("click", () => {
   resetLevel();
 });
 
-prevLevel.addEventListener("click", () => {
-  if (!state.started) return;
-  if (state.gameOver) return;
-  state.level = (state.level - 1 + levels.length) % levels.length;
-  state.totalThrows = 0;
-  state.points = 0;
-  state.holesCompleted = 0;
-  state.practiceMode = true;
-  resetLevel(true);
-  message.textContent = `Practice mode: hole ${state.level + 1}. Scores only save from a full round starting at hole 1.`;
-});
 
-nextLevel.addEventListener("click", () => {
-  if (!state.started) return;
-  if (state.gameOver) return;
-  state.level = (state.level + 1) % levels.length;
-  state.totalThrows = 0;
-  state.points = 0;
-  state.holesCompleted = 0;
-  state.practiceMode = true;
-  resetLevel(true);
-  message.textContent = `Practice mode: hole ${state.level + 1}. Scores only save from a full round starting at hole 1.`;
-});
 
 startForm.addEventListener("submit", (event) => {
   event.preventDefault();

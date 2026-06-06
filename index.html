@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Chingones Disc Golf</title>
-    <link rel="stylesheet" href="style.css?v=1.3" />
+    <link rel="stylesheet" href="style.css?v=1.4" />
   </head>
   <body>
     <main class="game-shell">
@@ -50,7 +50,6 @@
       <canvas id="game" width="960" height="560" aria-label="Disc golf game"></canvas>
 
       <section class="controls" aria-label="Controls">
-        <button id="prevLevel" type="button" title="Previous hole">&lsaquo;</button>
         <div class="controls-center">
           <p id="message">Drag from the player and release to throw.</p>
           <button id="shootButton" type="button" class="shoot-btn" style="display: none;">HOLD TO THROW</button>
@@ -59,7 +58,6 @@
             <button id="btnPowerBar" class="mode-btn" type="button">Power Bar</button>
           </div>
         </div>
-        <button id="nextLevel" type="button" title="Next hole">&rsaquo;</button>
       </section>
 
       <section id="scorePanel" class="score-panel" aria-label="Final score" hidden>
@@ -78,6 +76,6 @@
       </section>
     </main>
 
-    <script src="game.js?v=1.3"></script>
+    <script src="game.js?v=1.4"></script>
   </body>
 </html>

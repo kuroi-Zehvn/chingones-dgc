@@ -147,8 +147,10 @@ canvas {
 }
 
 .controls {
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  padding: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
 }
 
 .controls p {
@@ -508,17 +510,11 @@ canvas {
 
   .controls {
     grid-area: controls;
-    grid-template-columns: auto 1fr auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 6px;
-    gap: 6px;
     min-height: 0;
-  }
-
-  .controls button {
-    width: 36px;
-    height: 36px;
-    font-size: 18px;
-    border-radius: 8px;
   }
 
   .controls p {
