@@ -1698,7 +1698,6 @@ shootButton.addEventListener("pointerdown", (event) => {
     message.textContent = "Tap on the map first to set your aim!";
     return;
   }
-  shootButton.setPointerCapture(event.pointerId);
   state.isCharging = true;
   state.charge = 0;
   state.chargeDirection = 1;
