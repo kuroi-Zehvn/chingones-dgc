@@ -137,6 +137,7 @@ button:active {
 
 canvas {
   width: 100%;
+  max-width: calc((100vh - 350px) * 12 / 7);
   aspect-ratio: 12 / 7;
   display: block;
   border-radius: 16px;
