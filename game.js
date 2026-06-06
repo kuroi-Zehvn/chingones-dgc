@@ -314,14 +314,14 @@ function clamp(value, min, max) {
 function launchDisc(from, to) {
   const dx = from.x - to.x;
   const dy = from.y - to.y;
-  const power = clamp(Math.hypot(dx, dy), 0, 180);
+  const power = clamp(Math.hypot(dx, dy), 0, 220);
   if (power < 12) return;
-  const speed = power * 0.11;
+  const speed = power * 0.115;
   const angle = Math.atan2(dy, dx);
   state.disc.vx = Math.cos(angle) * speed;
   state.disc.vy = Math.sin(angle) * speed;
   state.disc.z = 12;
-  state.disc.vz = power * 0.015;
+  state.disc.vz = power * 0.0155;
   state.disc.airborne = true;
   state.disc.moving = true;
   state.throws += 1;
@@ -864,13 +864,13 @@ function drawPlayer(x, y) {
   if (state.controlMode === "powerbar" && state.targetAim && !state.disc.moving && !state.won) {
     isAiming = true;
     angle = state.aimAngle;
-    pullDistance = 180 * state.charge;
+    pullDistance = 220 * state.charge;
   } else if (state.aim) {
     isAiming = true;
     const dx = state.disc.x - state.aim.x;
     const dy = state.disc.y - state.aim.y;
     angle = Math.atan2(dy, dx);
-    pullDistance = clamp(Math.hypot(dx, dy), 0, 180);
+    pullDistance = clamp(Math.hypot(dx, dy), 0, 220);
   }
   
   let drawX = x;
@@ -918,7 +918,7 @@ function drawPlayer(x, y) {
   // 4. Right arm (throwing arm)
   ctx.beginPath();
   if (isAiming) {
-    const pullFactor = pullDistance / 180;
+    const pullFactor = pullDistance / 220;
     const elbowX = -10 * pullFactor;
     const elbowY = 15 * (1 - pullFactor * 0.25);
     const handX = -20 * pullFactor;
@@ -1390,7 +1390,7 @@ function drawAim() {
   const disc = state.disc;
   const dx = disc.x - state.aim.x;
   const dy = disc.y - state.aim.y;
-  const power = clamp(Math.hypot(dx, dy), 0, 180);
+  const power = clamp(Math.hypot(dx, dy), 0, 220);
   const angle = Math.atan2(dy, dx);
   const end = {
     x: disc.x + Math.cos(angle) * power,
@@ -1648,17 +1648,17 @@ function executePowerBarThrow() {
   if (!state.isCharging) return;
   state.isCharging = false;
   
-  const power = 180 * state.charge;
+  const power = 220 * state.charge;
   if (power < 12) {
     state.charge = 0;
     return;
   }
   
-  const speed = power * 0.11;
+  const speed = power * 0.115;
   state.disc.vx = Math.cos(state.aimAngle) * speed;
   state.disc.vy = Math.sin(state.aimAngle) * speed;
   state.disc.z = 12;
-  state.disc.vz = power * 0.015;
+  state.disc.vz = power * 0.0155;
   state.disc.airborne = true;
   state.disc.moving = true;
   state.throws += 1;
