@@ -160,6 +160,87 @@ canvas {
   letter-spacing: 0.2px;
 }
 
+.controls-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.control-modes {
+  display: flex;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 3px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mode-btn {
+  background: transparent;
+  border: none;
+  border-radius: 16px;
+  color: #a3b899;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  height: auto;
+  width: auto;
+  cursor: pointer;
+  box-shadow: none;
+  transition: all 0.2s;
+  display: grid;
+  place-items: center;
+}
+
+.mode-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffd166;
+  transform: none;
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.mode-btn.active {
+  background: linear-gradient(135deg, #1f442f 0%, #153021 100%);
+  color: #ffd166;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.shoot-btn {
+  width: 100%;
+  max-width: 240px;
+  height: 42px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ff2a6d 0%, #c20043 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 6px 20px rgba(255, 42, 109, 0.3);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: grid;
+  place-items: center;
+}
+
+.shoot-btn:hover {
+  background: linear-gradient(135deg, #ff4c85 0%, #d6004b 100%);
+  box-shadow: 0 8px 25px rgba(255, 42, 109, 0.45);
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.shoot-btn:active {
+  background: linear-gradient(135deg, #d6004b 0%, #a30034 100%);
+  transform: translateY(1px);
+  box-shadow: 0 3px 10px rgba(255, 42, 109, 0.2);
+}
+
 .score-panel {
   position: fixed;
   inset: 0;
@@ -443,6 +524,21 @@ canvas {
   .controls p {
     font-size: 11px;
     line-height: 1.2;
+  }
+
+  .controls-center {
+    gap: 4px;
+  }
+
+  .mode-btn {
+    padding: 4px 10px;
+    font-size: 10px;
+  }
+
+  .shoot-btn {
+    height: 34px;
+    font-size: 12px;
+    max-width: 180px;
   }
 
   .score-panel {

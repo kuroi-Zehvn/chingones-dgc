@@ -16,6 +16,9 @@ const finalScore = document.getElementById("finalScore");
 const leaderboardList = document.getElementById("leaderboardList");
 const leaderboardNote = document.getElementById("leaderboardNote");
 const newRoundButton = document.getElementById("newRoundButton");
+const btnSlingshot = document.getElementById("btnSlingshot");
+const btnPowerBar = document.getElementById("btnPowerBar");
+const shootButton = document.getElementById("shootButton");
 
 const logoImg = new Image();
 logoImg.src = "assets/chingones.png";
@@ -225,6 +228,12 @@ const state = {
   started: false,
   playerName: "",
   particles: [],
+  controlMode: "slingshot",
+  isCharging: false,
+  charge: 0,
+  chargeDirection: 1,
+  targetAim: null,
+  aimAngle: 0,
 };
 
 function currentLevel() {
@@ -245,6 +254,10 @@ function resetLevel(keepMessage = false) {
   state.player.x = level.start.x;
   state.player.y = level.start.y;
   state.aim = null;
+  state.targetAim = null;
+  state.aimAngle = 0;
+  state.isCharging = false;
+  state.charge = 0;
   state.won = false;
   state.gameOver = false;
   state.scoreSaved = false;
@@ -655,6 +668,18 @@ function burst(x, y) {
 }
 
 function update() {
+  // Update charge level for Power Bar mode
+  if (state.controlMode === "powerbar" && state.isCharging) {
+    state.charge += 0.022 * state.chargeDirection;
+    if (state.charge >= 1) {
+      state.charge = 1;
+      state.chargeDirection = -1;
+    } else if (state.charge <= 0) {
+      state.charge = 0;
+      state.chargeDirection = 1;
+    }
+  }
+
   const disc = state.disc;
   if (disc.moving) {
     if (disc.airborne) {
@@ -838,7 +863,11 @@ function drawPlayer(x, y) {
   let isAiming = false;
   let pullDistance = 0;
   
-  if (state.aim) {
+  if (state.controlMode === "powerbar" && state.targetAim && !state.disc.moving && !state.won) {
+    isAiming = true;
+    angle = state.aimAngle;
+    pullDistance = 180 * state.charge;
+  } else if (state.aim) {
     isAiming = true;
     const dx = state.disc.x - state.aim.x;
     const dy = state.disc.y - state.aim.y;
@@ -1338,6 +1367,27 @@ function drawDisc() {
 }
 
 function drawAim() {
+  if (state.controlMode === "powerbar") {
+    if (!state.targetAim || state.disc.moving || state.won) return;
+    
+    ctx.save();
+    ctx.strokeStyle = "rgba(255, 209, 102, 0.72)";
+    ctx.lineWidth = 4;
+    ctx.setLineDash([8, 8]);
+    ctx.beginPath();
+    ctx.moveTo(state.disc.x, state.disc.y - state.disc.z);
+    ctx.lineTo(state.targetAim.x, state.targetAim.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = "#ffd166";
+    ctx.beginPath();
+    ctx.arc(state.targetAim.x, state.targetAim.y, 6 + Math.sin(performance.now() * 0.01) * 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    return;
+  }
+
   if (!state.aim) return;
   const disc = state.disc;
   const dx = disc.x - state.aim.x;
@@ -1425,6 +1475,45 @@ function drawParticles() {
   ctx.globalAlpha = 1;
 }
 
+function drawPowerBar() {
+  if (state.controlMode !== "powerbar" || !state.isCharging) return;
+
+  const barX = 40;
+  const barY = 140;
+  const barW = 24;
+  const barH = 320;
+
+  ctx.save();
+
+  // Background track (glassmorphism style)
+  ctx.fillStyle = "rgba(18, 30, 22, 0.75)";
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.roundRect(barX, barY, barW, barH, 8);
+  ctx.fill();
+  ctx.stroke();
+
+  // Glowing fill based on charge
+  const fillH = barH * state.charge;
+  const fillY = barY + barH - fillH;
+
+  const fillGrad = ctx.createLinearGradient(barX, barY + barH, barX, barY);
+  fillGrad.addColorStop(0, "#22c55e"); // Green at bottom
+  fillGrad.addColorStop(0.5, "#eab308"); // Yellow in middle
+  fillGrad.addColorStop(1, "#ff2a6d"); // Pink/Red at top
+
+  ctx.fillStyle = fillGrad;
+  ctx.shadowColor = "#ff2a6d";
+  ctx.shadowBlur = 8;
+
+  ctx.beginPath();
+  ctx.roundRect(barX + 2, fillY + 2, barW - 4, fillH - 4, 6);
+  ctx.fill();
+
+  ctx.restore();
+}
+
 function draw() {
   const level = currentLevel();
   drawField();
@@ -1435,6 +1524,7 @@ function draw() {
   drawDisc();
   drawParticles();
   drawWind();
+  drawPowerBar();
 }
 
 function tick() {
@@ -1452,6 +1542,14 @@ canvas.addEventListener("pointerdown", (event) => {
     resetLevel();
     return;
   }
+  
+  if (state.controlMode === "powerbar") {
+    state.targetAim = canvasPoint(event);
+    state.aimAngle = Math.atan2(state.targetAim.y - state.disc.y, state.targetAim.x - state.disc.x);
+    message.textContent = "Aim set! Now hold the throw button to launch.";
+    return;
+  }
+
   const point = canvasPoint(event);
   if (distance(point, state.disc) < 64) {
     state.aim = point;
@@ -1460,11 +1558,21 @@ canvas.addEventListener("pointerdown", (event) => {
 });
 
 canvas.addEventListener("pointermove", (event) => {
+  if (state.controlMode === "powerbar") {
+    if (state.targetAim && event.buttons > 0) {
+      state.targetAim = canvasPoint(event);
+      state.aimAngle = Math.atan2(state.targetAim.y - state.disc.y, state.targetAim.x - state.disc.x);
+    }
+    return;
+  }
+  
   if (!state.aim || state.disc.moving) return;
   state.aim = canvasPoint(event);
 });
 
 canvas.addEventListener("pointerup", (event) => {
+  if (state.controlMode === "powerbar") return;
+  
   if (!state.aim || state.disc.moving) return;
   launchDisc(state.disc, canvasPoint(event));
 });
@@ -1533,6 +1641,76 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
     return this;
   };
 }
+
+btnSlingshot.addEventListener("click", () => {
+  state.controlMode = "slingshot";
+  btnSlingshot.classList.add("active");
+  btnPowerBar.classList.remove("active");
+  shootButton.style.display = "none";
+  state.targetAim = null;
+  state.isCharging = false;
+  state.charge = 0;
+  if (state.started && !state.gameOver) {
+    message.textContent = `Par ${currentLevel().par}: drag from the player and release.`;
+  }
+});
+
+btnPowerBar.addEventListener("click", () => {
+  state.controlMode = "powerbar";
+  btnPowerBar.classList.add("active");
+  btnSlingshot.classList.remove("active");
+  shootButton.style.display = "grid";
+  state.targetAim = null;
+  state.isCharging = false;
+  state.charge = 0;
+  if (state.started && !state.gameOver) {
+    message.textContent = "Tap on the map to aim, then hold the throw button.";
+  }
+});
+
+function executePowerBarThrow() {
+  if (!state.isCharging) return;
+  state.isCharging = false;
+  
+  const power = 180 * state.charge;
+  if (power < 12) {
+    state.charge = 0;
+    return;
+  }
+  
+  const speed = power * 0.11;
+  state.disc.vx = Math.cos(state.aimAngle) * speed;
+  state.disc.vy = Math.sin(state.aimAngle) * speed;
+  state.disc.z = 12;
+  state.disc.vz = power * 0.015;
+  state.disc.airborne = true;
+  state.disc.moving = true;
+  state.throws += 1;
+  state.targetAim = null; // reset aim after throwing
+  state.charge = 0;
+  message.textContent = "Nice throw!";
+  updateHud();
+}
+
+shootButton.addEventListener("pointerdown", (event) => {
+  if (!state.started || state.gameOver || state.disc.moving || state.won) return;
+  if (!state.targetAim) {
+    message.textContent = "Tap on the map first to set your aim!";
+    return;
+  }
+  shootButton.setPointerCapture(event.pointerId);
+  state.isCharging = true;
+  state.charge = 0;
+  state.chargeDirection = 1;
+});
+
+shootButton.addEventListener("pointerup", (event) => {
+  executePowerBarThrow();
+});
+
+shootButton.addEventListener("pointerleave", (event) => {
+  executePowerBarThrow();
+});
 
 resetLevel(true);
 message.textContent = "Enter your name to start the round.";
