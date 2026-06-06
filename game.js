@@ -658,8 +658,8 @@ function update() {
   const disc = state.disc;
   if (disc.moving) {
     if (disc.airborne) {
-      disc.vx += state.wind.x * 0.022;
-      disc.vy += state.wind.y * 0.022;
+      disc.vx += state.wind.x * 0.11;
+      disc.vy += state.wind.y * 0.11;
       disc.vx *= 0.992;
       disc.vy *= 0.992;
       disc.z += disc.vz;
@@ -991,7 +991,7 @@ function drawBasket(basket) {
   ctx.lineWidth = 5.5;
   ctx.beginPath();
   ctx.moveTo(0, 0);
-  ctx.lineTo(0, -42);
+  ctx.lineTo(0, -68); // Extend pole upwards to hold flag
   ctx.stroke();
   
   // Pole Highlight
@@ -999,13 +999,15 @@ function drawBasket(basket) {
   ctx.lineWidth = 1.2;
   ctx.beginPath();
   ctx.moveTo(-1.2, 0);
-  ctx.lineTo(-1.2, -42);
+  ctx.lineTo(-1.2, -68);
   ctx.stroke();
 
   // 4. Chains (concentric outer/inner heavy steel chains with link pattern)
   ctx.strokeStyle = "rgba(148, 163, 184, 0.9)";
   ctx.lineWidth = 2.2;
   ctx.setLineDash([4, 3]); // Creates realistic chain link dashes!
+  
+  // Outer chain loop
   for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
     const cos = Math.cos(angle);
     const sin = Math.sin(angle);
@@ -1013,6 +1015,21 @@ function drawBasket(basket) {
     const topY = -42 + sin * 4.5;
     const botX = cos * 5.5;
     const botY = -14 + sin * 1.8;
+    
+    ctx.beginPath();
+    ctx.moveTo(topX, topY);
+    ctx.quadraticCurveTo(topX * 0.45, -28, botX, botY);
+    ctx.stroke();
+  }
+
+  // Inner chain loop (adds depth and realism!)
+  for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 3) {
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    const topX = cos * 8;
+    const topY = -42 + sin * 2.5;
+    const botX = cos * 3;
+    const botY = -14 + sin * 1.0;
     
     ctx.beginPath();
     ctx.moveTo(topX, topY);
@@ -1077,6 +1094,34 @@ function drawBasket(basket) {
   ctx.strokeStyle = "#ca8a04";
   ctx.lineWidth = 1.5;
   ctx.stroke();
+
+  // 7. Waving Flag at the top pointing in the direction of the wind
+  const windX = state.wind.x;
+  const flagDir = windX === 0 ? -1 : Math.sign(windX); // points with wind, default left
+  const flagLength = 22;
+  const flagHeight = 12;
+  const time = performance.now() * 0.009;
+  
+  ctx.save();
+  ctx.fillStyle = "#ef476f"; // vibrant pinkish red
+  ctx.strokeStyle = "#9d174d";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(0, -68);
+  
+  // Draw waving flag body using sine wave
+  for (let i = 0; i <= flagLength; i += 2) {
+    const wave = Math.sin(time + i * 0.2) * 2;
+    ctx.lineTo(i * flagDir, -68 + wave);
+  }
+  for (let i = flagLength; i >= 0; i -= 2) {
+    const wave = Math.sin(time + i * 0.2) * 2;
+    ctx.lineTo(i * flagDir, -68 + flagHeight + wave);
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
 
   ctx.restore();
 }
