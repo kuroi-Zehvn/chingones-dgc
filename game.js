@@ -658,8 +658,8 @@ function update() {
   const disc = state.disc;
   if (disc.moving) {
     if (disc.airborne) {
-      disc.vx += state.wind.x * 0.11;
-      disc.vy += state.wind.y * 0.11;
+      disc.vx += state.wind.x * 0.55;
+      disc.vy += state.wind.y * 0.55;
       disc.vx *= 0.992;
       disc.vy *= 0.992;
       disc.z += disc.vz;
