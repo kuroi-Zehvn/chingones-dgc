@@ -360,7 +360,7 @@ canvas {
   }
 }
 
-@media (orientation: landscape) and (max-height: 600px) {
+@media (orientation: landscape) and (max-width: 1024px) {
   body {
     padding: 8px;
     place-items: center center;
