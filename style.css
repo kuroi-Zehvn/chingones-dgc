@@ -21,6 +21,7 @@ body {
     radial-gradient(circle at 15% 15%, rgba(39, 110, 75, 0.25), transparent 45%),
     radial-gradient(circle at 85% 85%, rgba(244, 185, 66, 0.08), transparent 45%),
     linear-gradient(135deg, #090f0b 0%, #121e16 100%);
+  overflow: hidden;
 }
 
 .game-shell {
